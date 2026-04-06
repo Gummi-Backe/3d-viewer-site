@@ -111,8 +111,8 @@ function applyViewerPresetForPath(path) {
   const isAnimated = path.startsWith("animate_models/models/");
   viewer.cameraTarget = "auto auto auto";
   if (isAnimated) {
-    viewer.cameraOrbit = "0deg 75deg 145%";
-    viewer.fieldOfView = "36deg";
+    viewer.cameraOrbit = "0deg 78deg 185%";
+    viewer.fieldOfView = "38deg";
   } else {
     viewer.cameraOrbit = "0deg 75deg 110%";
     viewer.fieldOfView = "45deg";
@@ -130,7 +130,7 @@ function adjustAnimatedFraming() {
   const cy = Number(center?.y ?? 0);
   const cz = Number(center?.z ?? 0);
   const sy = Number(size?.y ?? 0);
-  const targetY = cy + sy * 0.2;
+  const targetY = cy - sy * 0.1;
 
   viewer.cameraTarget = `${cx}m ${targetY}m ${cz}m`;
   if (typeof viewer.jumpCameraToGoal === "function") {
