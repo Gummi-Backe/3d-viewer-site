@@ -85,6 +85,10 @@ model-viewer {
   z-index: 30;
 }
 
+.overlay[hidden] {
+  display: none;
+}
+
 .overlay-card {
   width: min(980px, 96vw);
   max-height: 90vh;
