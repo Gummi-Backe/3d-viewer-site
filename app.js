@@ -90,6 +90,7 @@ async function loadGallery() {
         setStatus(`Lade Modell: ${baseName}...`);
         await loadModelByBase(baseName);
         setStatus(`Modell geladen: ${baseName}`);
+        closeAllOverlays();
       } catch {
         setStatus(`Konnte models/${baseName}.glb nicht laden.`, true);
       }
