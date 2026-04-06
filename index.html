@@ -56,34 +56,66 @@
         <h2>Vorschau</h2>
         <button type="button" class="close-btn" data-close>Schliessen</button>
       </div>
-      <div id="gallery" class="gallery"></div>
+      <section class="group">
+        <h3>Standard-Modelle</h3>
+        <div id="galleryStatic" class="gallery"></div>
+      </section>
+      <section class="group">
+        <h3>Animierte Modelle</h3>
+        <div id="galleryAnimated" class="gallery"></div>
+      </section>
     </div>
   </section>
 
   <section id="uploadPanel" class="overlay" hidden>
     <div class="overlay-card">
       <div class="overlay-head">
-        <h2>Upload (Bild + GLB)</h2>
+        <h2>Upload</h2>
         <button type="button" class="close-btn" data-close>Schliessen</button>
       </div>
-      <div class="upload-layout">
-        <form id="uploadForm" class="upload-form">
-          <label>
-            Bild (z. B. Joda.png)
-            <input id="imageInput" type="file" accept="image/*" required>
-          </label>
-          <label>
-            GLB (z. B. Joda.glb)
-            <input id="glbInput" type="file" accept=".glb" required>
-          </label>
-          <button type="submit">Hochladen</button>
-        </form>
-        <div class="upload-preview">
-          <p>Bildvorschau</p>
-          <img id="imagePreview" alt="Vorschau">
+      <section class="group">
+        <h3>Standard (pictures / models)</h3>
+        <div class="upload-layout">
+          <form id="uploadForm" class="upload-form">
+            <label>
+              Bild (z. B. Joda.png)
+              <input id="imageInput" type="file" accept="image/*" required>
+            </label>
+            <label>
+              GLB (z. B. Joda.glb)
+              <input id="glbInput" type="file" accept=".glb" required>
+            </label>
+            <button type="submit">Hochladen</button>
+          </form>
+          <div class="upload-preview">
+            <p>Bildvorschau</p>
+            <img id="imagePreview" alt="Vorschau">
+          </div>
         </div>
-      </div>
-      <p id="status" class="status"></p>
+        <p id="status" class="status"></p>
+      </section>
+
+      <section class="group">
+        <h3>Animiert (animate_models/picture / animate_models/models)</h3>
+        <div class="upload-layout">
+          <form id="uploadAnimatedForm" class="upload-form">
+            <label>
+              Bild (z. B. Tanz.png)
+              <input id="imageAnimatedInput" type="file" accept="image/*" required>
+            </label>
+            <label>
+              GLB (z. B. Tanz.glb)
+              <input id="glbAnimatedInput" type="file" accept=".glb" required>
+            </label>
+            <button type="submit">Hochladen</button>
+          </form>
+          <div class="upload-preview">
+            <p>Bildvorschau</p>
+            <img id="imageAnimatedPreview" alt="Vorschau animiert">
+          </div>
+        </div>
+        <p id="statusAnimated" class="status"></p>
+      </section>
     </div>
   </section>
 </body>

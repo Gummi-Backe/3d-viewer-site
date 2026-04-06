@@ -19,7 +19,6 @@ const firebaseConfig = {
 };
 
 const viewer = document.getElementById("viewer");
-const gallery = document.getElementById("gallery");
 const statusEl = document.getElementById("status");
 const uploadForm = document.getElementById("uploadForm");
 const imageInput = document.getElementById("imageInput");
@@ -32,10 +31,21 @@ const closeButtons = document.querySelectorAll("[data-close]");
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const storage = getStorage(app);
+const galleryStatic = document.getElementById("galleryStatic");
+const galleryAnimated = document.getElementById("galleryAnimated");
+const uploadAnimatedForm = document.getElementById("uploadAnimatedForm");
+const imageAnimatedInput = document.getElementById("imageAnimatedInput");
+const glbAnimatedInput = document.getElementById("glbAnimatedInput");
+const imageAnimatedPreview = document.getElementById("imageAnimatedPreview");
+const statusAnimatedEl = document.getElementById("statusAnimated");
 
 function setStatus(message, isError = false) {
-  statusEl.textContent = message;
-  statusEl.dataset.error = isError ? "1" : "0";
+  setStatusFor(statusEl, message, isError);
+}
+
+function setStatusFor(target, message, isError = false) {
+  target.textContent = message;
+  target.dataset.error = isError ? "1" : "0";
 }
 
 function describeError(error) {
@@ -59,21 +69,25 @@ function escapeHtml(value) {
 }
 
 async function loadModelByBase(baseName) {
-  const modelRef = ref(storage, `models/${baseName}.glb`);
+  return loadModelFromPath(`models/${baseName}.glb`);
+}
+
+async function loadModelFromPath(path) {
+  const modelRef = ref(storage, path);
   const modelUrl = await getDownloadURL(modelRef);
   viewer.src = modelUrl;
 }
 
-async function loadGallery() {
-  gallery.innerHTML = "";
+async function renderGallerySection(container, picturesPath, modelsPath) {
+  container.innerHTML = "";
 
-  const picturesRef = ref(storage, "pictures");
+  const picturesRef = ref(storage, picturesPath);
   const result = await listAll(picturesRef);
   const items = result.items.sort((a, b) => a.name.localeCompare(b.name));
 
   if (!items.length) {
-    gallery.innerHTML = "<p class=\"empty\">Keine Bilder gefunden.</p>";
-    return;
+    container.innerHTML = "<p class=\"empty\">Keine Bilder gefunden.</p>";
+    return items;
   }
 
   for (const item of items) {
@@ -88,20 +102,43 @@ async function loadGallery() {
     button.addEventListener("click", async () => {
       try {
         setStatus(`Lade Modell: ${baseName}...`);
-        await loadModelByBase(baseName);
+        await loadModelFromPath(`${modelsPath}/${baseName}.glb`);
         setStatus(`Modell geladen: ${baseName}`);
         closeAllOverlays();
       } catch {
-        setStatus(`Konnte models/${baseName}.glb nicht laden.`, true);
+        setStatus(`Konnte ${modelsPath}/${baseName}.glb nicht laden.`, true);
       }
     });
-    gallery.appendChild(button);
+    container.appendChild(button);
   }
 
-  const jodaItem = items.find((entry) => fileBaseName(entry.name).toLowerCase() === "joda");
-  const firstBase = jodaItem ? fileBaseName(jodaItem.name) : fileBaseName(items[0].name);
-  await loadModelByBase(firstBase);
-  setStatus(`Modell geladen: ${firstBase}`);
+  return items;
+}
+
+async function loadGallery() {
+  const staticItems = await renderGallerySection(galleryStatic, "pictures", "models");
+  const animatedItems = await renderGallerySection(
+    galleryAnimated,
+    "animate_models/picture",
+    "animate_models/models"
+  );
+
+  if (staticItems.length) {
+    const jodaItem = staticItems.find((entry) => fileBaseName(entry.name).toLowerCase() === "joda");
+    const firstBase = jodaItem ? fileBaseName(jodaItem.name) : fileBaseName(staticItems[0].name);
+    await loadModelByBase(firstBase);
+    setStatus(`Modell geladen: ${firstBase}`);
+    return;
+  }
+
+  if (animatedItems.length) {
+    const firstBase = fileBaseName(animatedItems[0].name);
+    await loadModelFromPath(`animate_models/models/${firstBase}.glb`);
+    setStatus(`Modell geladen: ${firstBase}`);
+    return;
+  }
+
+  setStatus("Keine Modelle gefunden.", true);
 }
 
 function openOverlay(id) {
@@ -145,50 +182,90 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-uploadForm.addEventListener("submit", async (event) => {
+async function handleUpload({
+  event,
+  form,
+  imageField,
+  glbField,
+  previewField,
+  statusField,
+  picturesPath,
+  modelsPath
+}) {
   event.preventDefault();
-
-  const imageFile = imageInput.files?.[0];
-  const glbFile = glbInput.files?.[0];
+  const imageFile = imageField.files?.[0];
+  const glbFile = glbField.files?.[0];
 
   if (!imageFile || !glbFile) {
-    setStatus("Bitte Bild und GLB auswählen.", true);
+    setStatusFor(statusField, "Bitte Bild und GLB auswählen.", true);
     return;
   }
 
   const imageBase = fileBaseName(imageFile.name);
-
   if (!glbFile.name.toLowerCase().endsWith(".glb")) {
-    setStatus("Die 3D-Datei muss .glb sein.", true);
+    setStatusFor(statusField, "Die 3D-Datei muss .glb sein.", true);
     return;
   }
 
   try {
-    setStatus("Upload läuft...");
-    const imageRef = ref(storage, `pictures/${imageFile.name}`);
-    const modelRef = ref(storage, `models/${imageBase}.glb`);
+    setStatusFor(statusField, "Upload läuft...");
+    const imageRef = ref(storage, `${picturesPath}/${imageFile.name}`);
+    const modelRef = ref(storage, `${modelsPath}/${imageBase}.glb`);
     await uploadBytes(imageRef, imageFile);
     await uploadBytes(modelRef, glbFile, { contentType: "model/gltf-binary" });
-    uploadForm.reset();
+    form.reset();
+    previewField.removeAttribute("src");
+    previewField.classList.remove("visible");
     await loadGallery();
-    setStatus(`Upload erfolgreich: ${imageBase}`);
+    setStatusFor(statusField, `Upload erfolgreich: ${imageBase}`);
   } catch (error) {
-    setStatus(`Upload fehlgeschlagen. ${describeError(error)}`, true);
+    setStatusFor(statusField, `Upload fehlgeschlagen. ${describeError(error)}`, true);
   }
-});
+}
 
-imageInput.addEventListener("change", () => {
-  const imageFile = imageInput.files?.[0];
-  if (!imageFile) {
-    imagePreview.removeAttribute("src");
-    imagePreview.classList.remove("visible");
-    return;
-  }
+function bindPreview(inputField, previewField) {
+  inputField.addEventListener("change", () => {
+    const imageFile = inputField.files?.[0];
+    if (!imageFile) {
+      previewField.removeAttribute("src");
+      previewField.classList.remove("visible");
+      return;
+    }
 
-  const objectUrl = URL.createObjectURL(imageFile);
-  imagePreview.src = objectUrl;
-  imagePreview.classList.add("visible");
-});
+    const objectUrl = URL.createObjectURL(imageFile);
+    previewField.src = objectUrl;
+    previewField.classList.add("visible");
+  });
+}
+
+uploadForm.addEventListener("submit", (event) =>
+  handleUpload({
+    event,
+    form: uploadForm,
+    imageField: imageInput,
+    glbField: glbInput,
+    previewField: imagePreview,
+    statusField: statusEl,
+    picturesPath: "pictures",
+    modelsPath: "models"
+  })
+);
+
+uploadAnimatedForm.addEventListener("submit", (event) =>
+  handleUpload({
+    event,
+    form: uploadAnimatedForm,
+    imageField: imageAnimatedInput,
+    glbField: glbAnimatedInput,
+    previewField: imageAnimatedPreview,
+    statusField: statusAnimatedEl,
+    picturesPath: "animate_models/picture",
+    modelsPath: "animate_models/models"
+  })
+);
+
+bindPreview(imageInput, imagePreview);
+bindPreview(imageAnimatedInput, imageAnimatedPreview);
 
 async function bootstrap() {
   try {

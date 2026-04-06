@@ -121,6 +121,19 @@ h2 {
   font-size: 1.1rem;
 }
 
+.group + .group {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid #262626;
+}
+
+h3 {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #dadada;
+}
+
 .close-btn {
   border: 1px solid #333;
   border-radius: 7px;
