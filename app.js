@@ -9,11 +9,11 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
 const firebaseConfig = {
-  apiKey: "DEINE_API_KEY",
+  apiKey: "AIzaSyD_p9VALWNYB2vHh8PVXQj2-rwi4wMHn88",
   authDomain: "dreid-viewer-site.firebaseapp.com",
   projectId: "dreid-viewer-site",
   storageBucket: "dreid-viewer-site.firebasestorage.app",
-  appId: "DEINE_APP_ID"
+  appId: "1:698564758132:web:ced1ec2a325e22d468df21"
 };
 
 const viewer = document.getElementById("viewer");
@@ -129,14 +129,6 @@ uploadForm.addEventListener("submit", async (event) => {
 });
 
 async function bootstrap() {
-  if (
-    firebaseConfig.apiKey === "DEINE_API_KEY" ||
-    firebaseConfig.appId === "DEINE_APP_ID"
-  ) {
-    setStatus("Bitte in app.js zuerst Firebase apiKey und appId eintragen.", true);
-    return;
-  }
-
   try {
     await signInAnonymously(auth);
     await loadGallery();
