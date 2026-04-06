@@ -9,10 +9,12 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyD_pVALWNYB2vHh8PVXQj2-rwi4wMHn88",
+  apiKey: "AIzaSyD_gpVALWNYB2vhH8PVXQj2-rwi4wMHn88",
   authDomain: "dreid-viewer-site.firebaseapp.com",
   projectId: "dreid-viewer-site",
   storageBucket: "dreid-viewer-site.firebasestorage.app",
+  messagingSenderId: "698564758132",
+  measurementId: "G-Z3WEY1MH4R",
   appId: "1:698564758132:web:ced1ec2a325e22d468df21"
 };
 
