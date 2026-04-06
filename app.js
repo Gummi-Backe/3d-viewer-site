@@ -68,6 +68,49 @@ function escapeHtml(value) {
     .replaceAll("'", "&#39;");
 }
 
+async function stabilizeLoadedMaterials() {
+  const model = viewer?.model;
+  const materials = model?.materials;
+  if (!materials?.length) return;
+
+  for (const material of materials) {
+    try {
+      if (typeof material.ensureLoaded === "function") {
+        await material.ensureLoaded();
+      }
+      if (typeof material.setDoubleSided === "function") {
+        material.setDoubleSided(true);
+      }
+      if (typeof material.getAlphaMode === "function" && typeof material.setAlphaMode === "function") {
+        const alphaMode = String(material.getAlphaMode() || "").toUpperCase();
+        if (alphaMode === "BLEND") {
+          material.setAlphaMode("MASK");
+          if (typeof material.setAlphaCutoff === "function") {
+            material.setAlphaCutoff(0.35);
+          }
+        }
+      }
+    } catch {
+      // Ignore per-material failures to keep model loading resilient.
+    }
+  }
+}
+
+function ensureAnimationPlayback() {
+  try {
+    if (typeof viewer.play === "function") {
+      viewer.play();
+    }
+  } catch {
+    // Non-animated models can safely ignore play errors.
+  }
+}
+
+viewer.addEventListener("load", async () => {
+  await stabilizeLoadedMaterials();
+  ensureAnimationPlayback();
+});
+
 async function loadModelByBase(baseName) {
   return loadModelFromPath(`models/${baseName}.glb`);
 }
