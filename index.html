@@ -33,17 +33,23 @@
 
     <section class="panel">
       <h2>Upload (Bild + GLB)</h2>
-      <form id="uploadForm" class="upload-form">
-        <label>
-          Bild (z. B. Joda.png)
-          <input id="imageInput" type="file" accept="image/*" required>
-        </label>
-        <label>
-          GLB (z. B. Joda.glb)
-          <input id="glbInput" type="file" accept=".glb" required>
-        </label>
-        <button type="submit">Hochladen</button>
-      </form>
+      <div class="upload-layout">
+        <form id="uploadForm" class="upload-form">
+          <label>
+            Bild (z. B. Joda.png)
+            <input id="imageInput" type="file" accept="image/*" required>
+          </label>
+          <label>
+            GLB (z. B. Joda.glb)
+            <input id="glbInput" type="file" accept=".glb" required>
+          </label>
+          <button type="submit">Hochladen</button>
+        </form>
+        <div class="upload-preview">
+          <p>Bildvorschau</p>
+          <img id="imagePreview" alt="Vorschau">
+        </div>
+      </div>
       <p id="status" class="status"></p>
     </section>
   </main>

@@ -24,6 +24,7 @@ const statusEl = document.getElementById("status");
 const uploadForm = document.getElementById("uploadForm");
 const imageInput = document.getElementById("imageInput");
 const glbInput = document.getElementById("glbInput");
+const imagePreview = document.getElementById("imagePreview");
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -129,6 +130,19 @@ uploadForm.addEventListener("submit", async (event) => {
   } catch (error) {
     setStatus(`Upload fehlgeschlagen. ${describeError(error)}`, true);
   }
+});
+
+imageInput.addEventListener("change", () => {
+  const imageFile = imageInput.files?.[0];
+  if (!imageFile) {
+    imagePreview.removeAttribute("src");
+    imagePreview.classList.remove("visible");
+    return;
+  }
+
+  const objectUrl = URL.createObjectURL(imageFile);
+  imagePreview.src = objectUrl;
+  imagePreview.classList.add("visible");
 });
 
 async function bootstrap() {
