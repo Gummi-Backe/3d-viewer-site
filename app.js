@@ -38,6 +38,7 @@ const imageAnimatedInput = document.getElementById("imageAnimatedInput");
 const glbAnimatedInput = document.getElementById("glbAnimatedInput");
 const imageAnimatedPreview = document.getElementById("imageAnimatedPreview");
 const statusAnimatedEl = document.getElementById("statusAnimated");
+let currentModelPath = "";
 
 function setStatus(message, isError = false) {
   setStatusFor(statusEl, message, isError);
@@ -106,9 +107,41 @@ function ensureAnimationPlayback() {
   }
 }
 
+function applyViewerPresetForPath(path) {
+  const isAnimated = path.startsWith("animate_models/models/");
+  viewer.cameraTarget = "auto auto auto";
+  if (isAnimated) {
+    viewer.cameraOrbit = "0deg 75deg 145%";
+    viewer.fieldOfView = "36deg";
+  } else {
+    viewer.cameraOrbit = "0deg 75deg 110%";
+    viewer.fieldOfView = "45deg";
+  }
+}
+
+function adjustAnimatedFraming() {
+  const isAnimated = currentModelPath.startsWith("animate_models/models/");
+  if (!isAnimated) return;
+  if (typeof viewer.getBoundingBoxCenter !== "function" || typeof viewer.getDimensions !== "function") return;
+
+  const center = viewer.getBoundingBoxCenter();
+  const size = viewer.getDimensions();
+  const cx = Number(center?.x ?? 0);
+  const cy = Number(center?.y ?? 0);
+  const cz = Number(center?.z ?? 0);
+  const sy = Number(size?.y ?? 0);
+  const targetY = cy + sy * 0.2;
+
+  viewer.cameraTarget = `${cx}m ${targetY}m ${cz}m`;
+  if (typeof viewer.jumpCameraToGoal === "function") {
+    viewer.jumpCameraToGoal();
+  }
+}
+
 viewer.addEventListener("load", async () => {
   await stabilizeLoadedMaterials();
   ensureAnimationPlayback();
+  adjustAnimatedFraming();
 });
 
 async function loadModelByBase(baseName) {
@@ -116,6 +149,8 @@ async function loadModelByBase(baseName) {
 }
 
 async function loadModelFromPath(path) {
+  currentModelPath = path;
+  applyViewerPresetForPath(path);
   const modelRef = ref(storage, path);
   const modelUrl = await getDownloadURL(modelRef);
   viewer.src = modelUrl;
