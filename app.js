@@ -39,6 +39,7 @@ const glbAnimatedInput = document.getElementById("glbAnimatedInput");
 const imageAnimatedPreview = document.getElementById("imageAnimatedPreview");
 const statusAnimatedEl = document.getElementById("statusAnimated");
 let currentModelPath = "";
+let lastLoadedWasAnimated = false;
 
 function setStatus(message, isError = false) {
   setStatusFor(statusEl, message, isError);
@@ -109,13 +110,26 @@ function ensureAnimationPlayback() {
 
 function applyViewerPresetForPath(path) {
   const isAnimated = path.startsWith("animate_models/models/");
-  viewer.cameraTarget = "auto auto auto";
+
+  if (!isAnimated) {
+    if (lastLoadedWasAnimated) {
+      // Restore neutral/default framing for standard models.
+      viewer.cameraTarget = "auto auto auto";
+      viewer.cameraOrbit = "0deg 75deg auto";
+      viewer.fieldOfView = "auto";
+      if (typeof viewer.jumpCameraToGoal === "function") {
+        viewer.jumpCameraToGoal();
+      }
+    }
+    lastLoadedWasAnimated = false;
+    return;
+  }
+
+  lastLoadedWasAnimated = true;
   if (isAnimated) {
-    viewer.cameraOrbit = "0deg 78deg 185%";
-    viewer.fieldOfView = "38deg";
-  } else {
-    viewer.cameraOrbit = "0deg 75deg 110%";
-    viewer.fieldOfView = "45deg";
+    viewer.cameraTarget = "auto auto auto";
+    viewer.cameraOrbit = "0deg 75deg auto";
+    viewer.fieldOfView = "auto";
   }
 }
 
@@ -130,7 +144,8 @@ function adjustAnimatedFraming() {
   const cy = Number(center?.y ?? 0);
   const cz = Number(center?.z ?? 0);
   const sy = Number(size?.y ?? 0);
-  const targetY = cy - sy * 0.1;
+  // Match Android approach: raise target for animated models.
+  const targetY = cy + sy * 0.56;
 
   viewer.cameraTarget = `${cx}m ${targetY}m ${cz}m`;
   if (typeof viewer.jumpCameraToGoal === "function") {
