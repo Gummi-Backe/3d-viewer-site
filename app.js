@@ -32,6 +32,12 @@ function setStatus(message, isError = false) {
   statusEl.dataset.error = isError ? "1" : "0";
 }
 
+function describeError(error) {
+  const code = error?.code ? String(error.code) : "unknown";
+  const message = error?.message ? String(error.message) : "Unbekannter Fehler";
+  return `${code}: ${message}`;
+}
+
 function fileBaseName(name) {
   const idx = name.lastIndexOf(".");
   return idx >= 0 ? name.slice(0, idx) : name;
@@ -123,8 +129,8 @@ uploadForm.addEventListener("submit", async (event) => {
     uploadForm.reset();
     await loadGallery();
     setStatus(`Upload erfolgreich: ${imageBase}`);
-  } catch {
-    setStatus("Upload fehlgeschlagen. Prüfe Rules/Auth.", true);
+  } catch (error) {
+    setStatus(`Upload fehlgeschlagen. ${describeError(error)}`, true);
   }
 });
 
@@ -132,8 +138,8 @@ async function bootstrap() {
   try {
     await signInAnonymously(auth);
     await loadGallery();
-  } catch {
-    setStatus("Anmeldung/Laden fehlgeschlagen. Prüfe Firebase Auth und Rules.", true);
+  } catch (error) {
+    setStatus(`Anmeldung/Laden fehlgeschlagen. ${describeError(error)}`, true);
   }
 }
 
