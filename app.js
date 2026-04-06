@@ -110,12 +110,6 @@ uploadForm.addEventListener("submit", async (event) => {
   }
 
   const imageBase = fileBaseName(imageFile.name);
-  const glbBase = fileBaseName(glbFile.name);
-
-  if (imageBase !== glbBase) {
-    setStatus("Dateinamen müssen gleich sein (ohne Endung).", true);
-    return;
-  }
 
   if (!glbFile.name.toLowerCase().endsWith(".glb")) {
     setStatus("Die 3D-Datei muss .glb sein.", true);
@@ -127,7 +121,7 @@ uploadForm.addEventListener("submit", async (event) => {
     const imageRef = ref(storage, `pictures/${imageFile.name}`);
     const modelRef = ref(storage, `models/${imageBase}.glb`);
     await uploadBytes(imageRef, imageFile);
-    await uploadBytes(modelRef, glbFile);
+    await uploadBytes(modelRef, glbFile, { contentType: "model/gltf-binary" });
     uploadForm.reset();
     await loadGallery();
     setStatus(`Upload erfolgreich: ${imageBase}`);
