@@ -3,16 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>3D Viewer</title>
+  <title>3D Viewer Gallery</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="./style.css">
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <script type="module" src="./app.js"></script>
 </head>
 <body>
   <main class="container">
-    <h1>Mein 3D-Modell</h1>
+    <h1>3D Viewer</h1>
+    <p class="hint">Klicke auf ein Bild, um das passende GLB zu laden.</p>
+
     <model-viewer
-      src="https://firebasestorage.googleapis.com/v0/b/dreid-viewer-site.firebasestorage.app/o/models%2FJoda.glb?alt=media&token=d74792bc-f6ad-4876-bbb9-f99ed7eba05c"
+      id="viewer"
+      src=""
       alt="3D-Modell"
       camera-controls
       auto-rotate
@@ -21,6 +25,27 @@
       environment-image="neutral"
       ar
     ></model-viewer>
+
+    <section class="panel">
+      <h2>Vorschau</h2>
+      <div id="gallery" class="gallery"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Upload (Bild + GLB)</h2>
+      <form id="uploadForm" class="upload-form">
+        <label>
+          Bild (z. B. Joda.png)
+          <input id="imageInput" type="file" accept="image/*" required>
+        </label>
+        <label>
+          GLB (z. B. Joda.glb)
+          <input id="glbInput" type="file" accept=".glb" required>
+        </label>
+        <button type="submit">Hochladen</button>
+      </form>
+      <p id="status" class="status"></p>
+    </section>
   </main>
 </body>
 </html>
