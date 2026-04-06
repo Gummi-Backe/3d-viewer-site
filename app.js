@@ -9,7 +9,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyD_p9VALWNYB2vHh8PVXQj2-rwi4wMHn88",
+  apiKey: "AIzaSyD_pVALWNYB2vHh8PVXQj2-rwi4wMHn88",
   authDomain: "dreid-viewer-site.firebaseapp.com",
   projectId: "dreid-viewer-site",
   storageBucket: "dreid-viewer-site.firebasestorage.app",
