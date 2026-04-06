@@ -25,6 +25,9 @@ const uploadForm = document.getElementById("uploadForm");
 const imageInput = document.getElementById("imageInput");
 const glbInput = document.getElementById("glbInput");
 const imagePreview = document.getElementById("imagePreview");
+const overlays = document.querySelectorAll(".overlay");
+const openButtons = document.querySelectorAll("[data-open]");
+const closeButtons = document.querySelectorAll("[data-close]");
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -99,6 +102,47 @@ async function loadGallery() {
   await loadModelByBase(firstBase);
   setStatus(`Modell geladen: ${firstBase}`);
 }
+
+function openOverlay(id) {
+  for (const overlay of overlays) {
+    overlay.hidden = overlay.id !== id;
+  }
+}
+
+function closeAllOverlays() {
+  for (const overlay of overlays) {
+    overlay.hidden = true;
+  }
+}
+
+for (const button of openButtons) {
+  button.addEventListener("click", () => {
+    const targetId = button.getAttribute("data-open");
+    if (targetId) {
+      openOverlay(targetId);
+    }
+  });
+}
+
+for (const button of closeButtons) {
+  button.addEventListener("click", () => {
+    closeAllOverlays();
+  });
+}
+
+for (const overlay of overlays) {
+  overlay.addEventListener("click", (event) => {
+    if (event.target === overlay) {
+      closeAllOverlays();
+    }
+  });
+}
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    closeAllOverlays();
+  }
+});
 
 uploadForm.addEventListener("submit", async (event) => {
   event.preventDefault();

@@ -11,8 +11,31 @@
 </head>
 <body>
   <main class="container">
-    <h1>3D Viewer</h1>
-    <p class="hint">Klicke auf ein Bild, um das passende GLB zu laden.</p>
+    <header class="topbar">
+      <h1>3D Viewer</h1>
+      <div class="top-actions">
+        <button type="button" class="tile-btn" data-open="galleryPanel" aria-controls="galleryPanel">
+          <span class="tile-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="18" height="18">
+              <rect x="3" y="4" width="8" height="7"></rect>
+              <rect x="13" y="4" width="8" height="7"></rect>
+              <rect x="3" y="13" width="8" height="7"></rect>
+              <rect x="13" y="13" width="8" height="7"></rect>
+            </svg>
+          </span>
+          <span>Vorschau</span>
+        </button>
+        <button type="button" class="tile-btn" data-open="uploadPanel" aria-controls="uploadPanel">
+          <span class="tile-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="18" height="18">
+              <path d="M12 3l4 4h-3v7h-2V7H8z"></path>
+              <rect x="4" y="16" width="16" height="4"></rect>
+            </svg>
+          </span>
+          <span>Upload</span>
+        </button>
+      </div>
+    </header>
 
     <model-viewer
       id="viewer"
@@ -25,14 +48,24 @@
       environment-image="neutral"
       ar
     ></model-viewer>
+  </main>
 
-    <section class="panel">
-      <h2>Vorschau</h2>
+  <section id="galleryPanel" class="overlay" hidden>
+    <div class="overlay-card">
+      <div class="overlay-head">
+        <h2>Vorschau</h2>
+        <button type="button" class="close-btn" data-close>Schliessen</button>
+      </div>
       <div id="gallery" class="gallery"></div>
-    </section>
+    </div>
+  </section>
 
-    <section class="panel">
-      <h2>Upload (Bild + GLB)</h2>
+  <section id="uploadPanel" class="overlay" hidden>
+    <div class="overlay-card">
+      <div class="overlay-head">
+        <h2>Upload (Bild + GLB)</h2>
+        <button type="button" class="close-btn" data-close>Schliessen</button>
+      </div>
       <div class="upload-layout">
         <form id="uploadForm" class="upload-form">
           <label>
@@ -51,7 +84,7 @@
         </div>
       </div>
       <p id="status" class="status"></p>
-    </section>
-  </main>
+    </div>
+  </section>
 </body>
 </html>
