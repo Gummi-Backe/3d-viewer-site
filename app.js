@@ -93,7 +93,8 @@ async function loadGallery() {
     gallery.appendChild(button);
   }
 
-  const firstBase = fileBaseName(items[0].name);
+  const jodaItem = items.find((entry) => fileBaseName(entry.name).toLowerCase() === "joda");
+  const firstBase = jodaItem ? fileBaseName(jodaItem.name) : fileBaseName(items[0].name);
   await loadModelByBase(firstBase);
   setStatus(`Modell geladen: ${firstBase}`);
 }
